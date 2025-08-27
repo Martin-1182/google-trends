@@ -1,0 +1,62 @@
+# Google Service Account JSON file (contains sensitive credentials)
+service_account.json
+
+# Python bytecode
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Logs
+*.log
+trends_updater.log
+
+# Virtual environments
+venv/
+env/
+.venv/
+ENV/
+
+# IDE files
+.vscode/
+.idea/
+
+# OS files
+.DS_Store
+Thumbs.db
+*.swp
+*.swo
+
+# Temporary files
+*.tmp
+*.temp
+.cache/
+
+# Distribution packages
+*.egg
+*.egg-info
+dist/
+build/
+
+# Jupyter Notebook
+.ipynb_checkpoints
+
+# Environment variables
+.env
+.env.local
+.env.production
+
+# Database files
+*.db
+*.sqlite
+*.sqlite3
+
+# Node modules (if any)
+node_modules/
+
+# Diagnostic scripts (optional - can be removed after setup)
+# diagnose_connection.py
+# get_service_account_email.py
+
+# OS files
+.DS_Store
+Thumbs.db

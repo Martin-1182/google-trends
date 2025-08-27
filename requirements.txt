@@ -1,0 +1,5 @@
+pytrends
+gspread
+pandas
+gspread-dataframe
+oauth2client
