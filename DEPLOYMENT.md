@@ -1,9 +1,11 @@
 # 🚀 Deployment Guide
 
 ## Files to Commit to Git
+
 These files should be committed and pushed to your repository:
 
 ### ✅ **Core Files (REQUIRED)**
+
 - `trends_updater.py` - Main script
 - `requirements.txt` - Python dependencies
 - `run_trends.sh` - Convenience script for running
@@ -11,12 +13,14 @@ These files should be committed and pushed to your repository:
 - `.gitignore` - Git ignore rules
 
 ### 🔧 **Helper Files (OPTIONAL)**
+
 - `diagnose_connection.py` - Diagnostic script
 - `get_service_account_email.py` - Helper script
 
 ## Server Setup Steps
 
 ### 1. **Clone Repository on Server**
+
 ```bash
 cd /var/www
 git clone <your-repository-url> Google-trends-data
@@ -24,6 +28,7 @@ cd Google-trends-data
 ```
 
 ### 2. **Set Up Python Environment**
+
 ```bash
 # Install system dependencies
 sudo apt update
@@ -38,6 +43,7 @@ pip install -r requirements.txt
 ```
 
 ### 3. **Set Up Google Service Account**
+
 ```bash
 # Copy your service account JSON file to the server
 # This file should NOT be in git repository
@@ -48,11 +54,13 @@ chmod 600 service_account.json
 ```
 
 ### 4. **Create Google Sheet**
+
 1. Create a new Google Sheet named "Google Trends Monitoring"
 2. Share it with your service account email (get it with: `python3 get_service_account_email.py`)
 3. Give "Editor" permissions
 
 ### 5. **Test the Setup**
+
 ```bash
 # Make scripts executable
 chmod +x run_trends.sh
@@ -62,6 +70,7 @@ chmod +x run_trends.sh
 ```
 
 ### 6. **Set Up Cron Job for Automation**
+
 ```bash
 # Edit crontab
 crontab -e
@@ -71,6 +80,7 @@ crontab -e
 ```
 
 ## File Structure After Setup
+
 ```
 /var/www/Google-trends-data/
 ├── trends_updater.py          # Main script
@@ -86,12 +96,14 @@ crontab -e
 ```
 
 ## Security Notes
+
 - ✅ `service_account.json` is in `.gitignore` - never commit it!
 - ✅ Virtual environment is not in git - create on each server
 - ✅ Logs are not in git - they contain runtime information
 - ✅ Use `chmod 600 service_account.json` for security
 
 ## Deployment Checklist
+
 - [ ] Repository cloned on server
 - [ ] Python virtual environment created
 - [ ] Dependencies installed
@@ -102,7 +114,9 @@ crontab -e
 - [ ] Log file monitored
 
 ## Troubleshooting
+
 If something doesn't work:
+
 1. Run `./run_trends.sh` manually to see errors
 2. Check `/var/www/Google-trends-data/trends_updater.log`
 3. Use `python3 diagnose_connection.py` for connection issues
