@@ -45,9 +45,9 @@ pip install -r requirements.txt
 ### 3. **Set Up Google Service Account**
 
 ```bash
-# Copy your service account JSON file to the server
-# This file should NOT be in git repository
-cp /path/to/your/service_account.json /var/www/Google-trends-data/service_account.json
+# Copy your service account JSON file to the project directory
+# This file should be in the SAME directory as trends_updater.py
+cp /path/to/your/service_account.json ./service_account.json
 
 # Set proper permissions
 chmod 600 service_account.json
@@ -76,18 +76,32 @@ chmod +x run_trends.sh
 crontab -e
 
 # Add this line for weekly updates (every Monday at 3:00 AM)
-0 3 * * 1 /var/www/Google-trends-data/run_trends.sh >> /var/www/Google-trends-data/trends_updater.log 2>&1
+# Replace /path/to/your/project with your actual project path
+0 3 * * 1 /path/to/your/project/run_trends.sh >> /path/to/your/project/trends_updater.log 2>&1
+```
+
+**To find your project path:**
+```bash
+# From your project directory, run:
+pwd
+# This will show you the full path to use in cron
 ```
 
 ## File Structure After Setup
 
 ```
-/var/www/Google-trends-data/
+your-project-directory/
 ├── trends_updater.py          # Main script
 ├── requirements.txt           # Dependencies
 ├── run_trends.sh             # Runner script
 ├── README.md                 # Documentation
 ├── .gitignore               # Git ignore rules
+├── service_account.json      # ⚠️  NOT IN GIT - add manually
+├── venv/                     # ⚠️  NOT IN GIT - created on server
+├── trends_updater.log        # ⚠️  NOT IN GIT - generated logs
+├── diagnose_connection.py    # Optional diagnostic
+└── get_service_account_email.py # Optional helper
+```
 ├── service_account.json      # ⚠️  NOT IN GIT - add manually
 ├── venv/                     # ⚠️  NOT IN GIT - created on server
 ├── trends_updater.log        # ⚠️  NOT IN GIT - generated logs

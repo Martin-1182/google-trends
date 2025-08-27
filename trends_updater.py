@@ -20,7 +20,7 @@ GEO_MAPPING = {
 TIMEFRAME = 'today 3-m'  # Posledných 90 dní
 
 # Cesta k JSON súboru so Service Account kľúčmi
-SERVICE_ACCOUNT_FILE = '/var/www/Google-trends-data/service_account.json'
+SERVICE_ACCOUNT_FILE = 'service_account.json'
 
 # Názov Google Sheet dokumentu, do ktorého sa budú dáta zapisovať
 GOOGLE_SHEET_NAME = 'Google Trends Monitoring'

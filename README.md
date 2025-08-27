@@ -2,7 +2,8 @@
 
 ## Cieľ
 
-Automaticky sťahovať dáta z Google Trends a zapisovať ich do Google Sheets. Skript bude bežať na privátnom serveri.
+Automaticky sťahovať dáta z Google# Spustiť skript na aktualizáciu Google Trends každý pondelok o 3:00
+0 3 * * 1 /path/to/your/Google-trends-data/run_trends.sh >> /path/to/your/Google-trends-data/trends_updater.log 2>&1rends a zapisovať ich do Google Sheets. Skript bude bežať na privátnom serveri.
 
 ## Technologický balíček (Stack)
 
