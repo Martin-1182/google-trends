@@ -1,14 +1,17 @@
 # Google Service Account JSON file (contains sensitive credentials)
 service_account.json
+*.json
+!requirements.txt
+
+# Logs
+*.log
+trends_updater.log
+trends.log
 
 # Python bytecode
 __pycache__/
 *.py[cod]
 *$py.class
-
-# Logs
-*.log
-trends_updater.log
 
 # Virtual environments
 venv/
