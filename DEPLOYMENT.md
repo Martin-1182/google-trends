@@ -1,137 +1,212 @@
-# 🚀 Deployment Guide
+# Deployment Guide - Google Trends Data Monitoring
 
-## Files to Commit to Git
+## 🚀 Server Deployment
 
-These files should be committed and pushed to your repository:
+### System Requirements
+- Linux server (Ubuntu/CentOS)
+- Python 3.7+
+- Internet connection
+- Cron access
 
-### ✅ **Core Files (REQUIRED)**
+## 📦 Files Structure
 
-- `trends_updater.py` - Main script
-- `requirements.txt` - Python dependencies
-- `run_trends.sh` - Convenience script for running
-- `README.md` - Documentation
-- `.gitignore` - Git ignore rules
-
-### 🔧 **Helper Files (OPTIONAL)**
-
-- `diagnose_connection.py` - Diagnostic script
-- `get_service_account_email.py` - Helper script
-
-## Server Setup Steps
-
-### 1. **Clone Repository on Server**
-
-```bash
-cd /var/www
-git clone <your-repository-url> Google-trends-data
-cd Google-trends-data
+### Core Files (Required)
+```
+Google-trends-data/
+├── main.py                 # Main data collector
+├── related_extractor.py    # Related data extractor
+├── config.py              # Configuration
+├── requirements.txt       # Python dependencies
+├── run.sh                 # Bash execution script
+└── service_account.json   # Google credentials (not in Git)
 ```
 
-### 2. **Set Up Python Environment**
+### Utility Files
+```
+tests/
+├── check_cron.sh          # Check cron status
+├── cron_examples.sh       # Cron examples  
+├── diagnose_connection.py # Connection diagnostics
+├── get_service_account_email.py # Service account info
+├── run_trends.sh          # Cron execution script
+└── setup_cron.sh          # Automated cron setup
+```
 
+## 🔧 Installation Steps
+
+### 1. Server Setup
 ```bash
-# Install system dependencies
-sudo apt update
-sudo apt install -y python3-venv python3-pip
+# Clone repository
+git clone https://github.com/Martin-1182/google-trends.git
+cd google-trends
 
 # Create virtual environment
 python3 -m venv venv
 source venv/bin/activate
 
-# Install Python packages
+# Install dependencies
 pip install -r requirements.txt
 ```
 
-### 3. **Set Up Google Service Account**
+### 2. Google API Configuration
 
-```bash
-# Copy your service account JSON file to the project directory
-# This file should be in the SAME directory as trends_updater.py
-cp /path/to/your/service_account.json ./service_account.json
+#### Service Account Setup
+1. Go to [Google Cloud Console](https://console.cloud.google.com/)
+2. Create new project or select existing
+3. Enable Google Sheets API
+4. Create Service Account:
+   - IAM & Admin → Service Accounts
+   - Create Service Account
+   - Download JSON key
+   - Save as `service_account.json`
 
-# Set proper permissions
-chmod 600 service_account.json
+#### Google Sheets Setup
+1. Create new Google Sheets document
+2. Share with service account email (Editor access)
+3. Note the spreadsheet name
+
+### 3. Configuration
+Edit `config.py`:
+```python
+# Essential settings
+SERVICE_ACCOUNT_FILE = 'service_account.json'
+SPREADSHEET_NAME = 'Google Trends Monitoring'
+
+# Keywords to track
+KEYWORDS = [
+    "online marketing",
+    "seo",
+    "social media"
+]
+
+# Geographic regions
+GEO_MAPPING = {
+    'Slovensko': 'SK',
+    'Česko': 'CZ',
+    'Global': ''
+}
+
+# Timing
+TIMEFRAME = 'today 3-m'
+REQUEST_DELAY = 60  # seconds between requests
 ```
 
-### 4. **Create Google Sheet**
+## 🤖 Automation Setup
 
-1. Create a new Google Sheet named "Google Trends Monitoring"
-2. Share it with your service account email (get it with: `python3 get_service_account_email.py`)
-3. Give "Editor" permissions
-
-### 5. **Test the Setup**
-
+### Automated Cron Setup
 ```bash
-# Make scripts executable
-chmod +x run_trends.sh
-
-# Test the script
-./run_trends.sh
+chmod +x tests/setup_cron.sh
+./tests/setup_cron.sh
 ```
 
-### 6. **Set Up Cron Job for Automation**
-
+### Manual Cron Setup
 ```bash
 # Edit crontab
 crontab -e
 
-# Add this line for weekly updates (every Monday at 3:00 AM)
-# Replace /path/to/your/project with your actual project path
-0 3 * * 1 /path/to/your/project/run_trends.sh >> /path/to/your/project/trends_updater.log 2>&1
+# Add daily execution at 9:00 AM
+0 9 * * * /var/www/Google-trends-data/tests/run_trends.sh >> /var/log/google_trends.log 2>&1
+
+# Add weekly Related data collection (Monday 10:00 AM)
+0 10 * * 1 cd /var/www/Google-trends-data && /usr/bin/python3 related_extractor.py >> /var/log/google_trends_related.log 2>&1
 ```
 
-**To find your project path:**
+### Cron Management
 ```bash
-# From your project directory, run:
-pwd
-# This will show you the full path to use in cron
+# Check active cron jobs
+./tests/check_cron.sh
+
+# View logs
+tail -f /var/log/google_trends.log
+
+# Check cron examples
+./tests/cron_examples.sh
 ```
 
-## File Structure After Setup
+## 🔍 Testing & Validation
 
-```
-your-project-directory/
-├── trends_updater.py          # Main script
-├── requirements.txt           # Dependencies
-├── run_trends.sh             # Runner script
-├── README.md                 # Documentation
-├── .gitignore               # Git ignore rules
-├── service_account.json      # ⚠️  NOT IN GIT - add manually
-├── venv/                     # ⚠️  NOT IN GIT - created on server
-├── trends_updater.log        # ⚠️  NOT IN GIT - generated logs
-├── diagnose_connection.py    # Optional diagnostic
-└── get_service_account_email.py # Optional helper
-```
-├── service_account.json      # ⚠️  NOT IN GIT - add manually
-├── venv/                     # ⚠️  NOT IN GIT - created on server
-├── trends_updater.log        # ⚠️  NOT IN GIT - generated logs
-├── diagnose_connection.py    # Optional diagnostic
-└── get_service_account_email.py # Optional helper
+### Connection Testing
+```bash
+# Test Google API connection
+python3 tests/diagnose_connection.py
+
+# Get service account info  
+python3 tests/get_service_account_email.py
+
+# Manual execution test
+python3 main.py
 ```
 
-## Security Notes
+### Troubleshooting
+```bash
+# Check logs for errors
+grep -i error /var/log/google_trends.log
 
-- ✅ `service_account.json` is in `.gitignore` - never commit it!
-- ✅ Virtual environment is not in git - create on each server
-- ✅ Logs are not in git - they contain runtime information
-- ✅ Use `chmod 600 service_account.json` for security
+# Test specific functionality
+python3 related_extractor.py
 
-## Deployment Checklist
+# Verify permissions
+ls -la service_account.json
+```
 
-- [ ] Repository cloned on server
-- [ ] Python virtual environment created
-- [ ] Dependencies installed
-- [ ] Service account JSON file copied (not committed!)
-- [ ] Google Sheet created and shared
-- [ ] Script tested manually
-- [ ] Cron job configured
-- [ ] Log file monitored
+## 📊 Monitoring
 
-## Troubleshooting
+### Log Files
+- `/var/log/google_trends.log` - Main execution log
+- `/var/log/google_trends_related.log` - Related data log
 
-If something doesn't work:
+### Key Metrics
+- Successful data collection rate
+- API rate limit warnings
+- Google Sheets write success
 
-1. Run `./run_trends.sh` manually to see errors
-2. Check `/var/www/Google-trends-data/trends_updater.log`
-3. Use `python3 diagnose_connection.py` for connection issues
-4. Verify service account permissions on Google Sheet
+### Alerts Setup
+Consider setting up alerts for:
+- Consecutive failed executions
+- Rate limit exceeded warnings
+- Google Sheets access errors
+
+## 🛡️ Security
+
+### File Permissions
+```bash
+# Secure service account file
+chmod 600 service_account.json
+
+# Executable permissions
+chmod +x run.sh tests/*.sh
+```
+
+### Best Practices
+- Keep `service_account.json` out of version control
+- Regular backup of credentials
+- Monitor service account usage
+- Rotate credentials periodically
+
+## 🔧 Maintenance
+
+### Regular Tasks
+1. Monitor log files for errors
+2. Check Google Cloud quota usage
+3. Verify cron job execution
+4. Update Python dependencies
+
+### Updates
+```bash
+# Update dependencies
+pip install -r requirements.txt --upgrade
+
+# Pull latest changes
+git pull origin master
+```
+
+---
+
+**Production Checklist**:
+- ✅ Service account configured
+- ✅ Google Sheets shared
+- ✅ Config.py updated
+- ✅ Cron jobs scheduled
+- ✅ Logging enabled
+- ✅ Permissions set
+- ✅ Testing completed
